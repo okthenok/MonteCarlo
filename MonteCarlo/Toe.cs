@@ -7,7 +7,7 @@ namespace JPMonteCarlo
     public class Toe : IGameState
     {
         public int[,] Board = new int[3, 3];
-        public IEnumerable<IGameState> moves;
+        public List<IGameState> moves;
         public bool playerTurn;
         bool playerStarted;
         public Toe(int[,] board, bool player, bool playerStarts)
@@ -18,9 +18,9 @@ namespace JPMonteCarlo
             CheckGameOver();
         }
 
-        public override IEnumerable<IGameState> Moves => moves ?? (moves = findMoves());
+        public override List<IGameState> Moves => moves ?? (moves = findMoves());
 
-        public IEnumerable<IGameState> findMoves()
+        public List<IGameState> findMoves()
         {
             if (IsTerminal)
             {
@@ -78,13 +78,13 @@ namespace JPMonteCarlo
                 if (column[i] == 3 || row[i] == 3)
                 {
                     this.IsTerminal = true;
-                    this.Value = 1 * (playerStarted ? 1 : -1);
+                    this.Value = 0; //player wins
                     return;
                 }
                 if (column[i] == -3 || row[i] == -3)
                 {
                     this.IsTerminal = true;
-                    this.Value = -1 * (playerStarted ? 1 : -1);
+                    this.Value = 1; //computer wins
                     return;
                 }
             }
@@ -95,13 +95,13 @@ namespace JPMonteCarlo
             if (lrdiagonal == 3 || rldiagonal == 3)
             {
                 this.IsTerminal = true;
-                this.Value = 1 * (playerStarted ? 1 : -1);
+                this.Value = 0;
                 return;
             }
             if (lrdiagonal == -3 || rldiagonal == -3)
             {
                 this.IsTerminal = true;
-                this.Value = -1 * (playerStarted ? 1 : -1);
+                this.Value = 1;
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace JPMonteCarlo
             if (isFull)
             {
                 this.IsTerminal = true;
-                this.Value = 0;
+                this.Value = 0.5;
             }
         }
     }

@@ -10,9 +10,11 @@ namespace JPMonteCarlo
         {
 
         }
-        public int Value { get; set; }
+        public double Value { get; set; }
         public bool IsTerminal { get; set; }
-        public virtual IEnumerable<IGameState> Moves { get; }
+        public virtual List<IGameState> Moves { get; }
         public bool Visited { get; set; }
+        public int TimesSimulated { get; set; }
+        public int TimesWon { get; set; }
     }
 }
