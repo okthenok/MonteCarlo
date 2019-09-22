@@ -15,6 +15,6 @@ namespace JPMonteCarlo
         public virtual List<IGameState> Moves { get; }
         public bool Visited { get; set; }
         public int TimesSimulated { get; set; }
-        public int TimesWon { get; set; }
+        public double TimesWon { get; set; }
     }
 }

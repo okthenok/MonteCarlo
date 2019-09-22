@@ -10,16 +10,13 @@ namespace JPMonteCarlo
         int[,] board = new int[3, 3];
         public Toe currToe;
         Random rand = new Random();
-        //Minimaxer minimaxer = new Minimaxer();
+        MonteCarloer monte;
 
         public TicTacToe(bool playerStarts)
         {
             currToe = new Toe(board, playerStarts, playerStarts);
-
-            if (!playerStarts)
-            {
-                //minimaxer.Minimax(currToe, playerStarts);
-            }   //probably will have to do the "call minimax after player moves if player starts" in Program.cs
+            monte = new MonteCarloer(currToe);
+            monte.MonteCarlo(10000);
         }
 
         public void playerMove(int x, int y, bool playerStarts)
@@ -38,16 +35,10 @@ namespace JPMonteCarlo
                 }
             }
         }
-
-        public void compMove(bool playerFirst)
+        public void compMove(Toe toe)
         {
-            
-        }
-
-
-        public void compMinimax()
-        {
-            //minimaxer.Minimax(currToe, true);
+            currToe = (Toe)monte.Selection(toe);
+            board = (int[,])currToe.Board.Clone();
         }
     }
 }

@@ -8,17 +8,18 @@ namespace JPMonteCarlo
     {
         Random rand = new Random();
         IGameState head;
-        public void MonteCarlo(IGameState Head)
+        public MonteCarloer(IGameState Head)
         {
             head = Head;
         }
 
-        public MonteCarloer(int playThroughs)
+        public void MonteCarlo(int playThroughs)
         {
             IGameState state = head;
             for (int i = 0; i < playThroughs; i++)
             {
-                Expansion(state);
+                Expansion(state); //counted playthroughs and how many playthroughs there should be are different
+                                    //check the expansion function and the recursive part of it (especially simulation)
             }
         }
         public IGameState Selection(IGameState state)
@@ -37,7 +38,14 @@ namespace JPMonteCarlo
                     bestProbability = tempProbability;
                 }
             }
-            return temp.Moves[bestMove];
+            if (temp.Moves.Count > 0)
+            {
+                return temp.Moves[bestMove];
+            }
+            else
+            {
+                return null;
+            }
         }
         public void Expansion(IGameState state)
         {
@@ -64,21 +72,27 @@ namespace JPMonteCarlo
                         temp = node;
                     }
                 }
-                Expansion(temp);
+                
+                if (temp.Moves.Count > 0)
+                {
+                    Expansion(temp);
+                }
                 return;
             }
             
             Simulation(temp);
-            Backpropogation(temp);
+            Backpropogation(state);
         }
         public double Simulation(IGameState state)
         {
             state.Visited = true;
             var temp = state;
-            while (temp.Moves != null)
+            while (temp.Moves.Count > 0)
             {
-                temp = temp.Moves[rand.Next(0, state.Moves.Count)];
+                temp = temp.Moves[rand.Next(0, temp.Moves.Count)];
             }
+            state.TimesWon += temp.Value;
+            state.TimesSimulated++;
             return temp.Value;
         }
         public void Backpropogation(IGameState state)
@@ -89,7 +103,7 @@ namespace JPMonteCarlo
                 state.TimesSimulated += move.TimesSimulated;
             }
         }
-        public double UTC(int childWins, int childSimulations, int parentSimulations, double c = 1.41)
+        public double UTC(double childWins, int childSimulations, int parentSimulations, double c = 1.41)
         {
             double exploitation = childWins / childSimulations;
             double exploration = c * (Math.Sqrt(Math.Log(parentSimulations) / childWins));
