@@ -8,6 +8,7 @@ namespace JPMonteCarlo
     {
         Random rand = new Random();
         IGameState head;
+        int playthroughs;
         public MonteCarloer(IGameState Head)
         {
             head = Head;
@@ -18,7 +19,7 @@ namespace JPMonteCarlo
             IGameState state = head;
             for (int i = 0; i < playThroughs; i++)
             {
-                Expansion(state); //counted playthroughs and how many playthroughs there should be are different
+                Expansion(state);   //counted playthroughs and how many playthroughs there should be are different
                                     //check the expansion function and the recursive part of it (especially simulation)
             }
         }
@@ -72,14 +73,15 @@ namespace JPMonteCarlo
                         temp = node;
                     }
                 }
-                
+
                 if (temp.Moves.Count > 0)
                 {
                     Expansion(temp);
+                    Backpropogation(state);
                 }
                 return;
             }
-            
+            playthroughs++;
             Simulation(temp);
             Backpropogation(state);
         }
@@ -97,6 +99,8 @@ namespace JPMonteCarlo
         }
         public void Backpropogation(IGameState state)
         {
+            state.TimesWon = 0;
+            state.TimesSimulated = 0;
             foreach (IGameState move in state.Moves)
             {
                 state.TimesWon += move.TimesWon;
@@ -106,7 +110,7 @@ namespace JPMonteCarlo
         public double UTC(double childWins, int childSimulations, int parentSimulations, double c = 1.41)
         {
             double exploitation = childWins / childSimulations;
-            double exploration = c * (Math.Sqrt(Math.Log(parentSimulations) / childWins));
+            double exploration = c * (Math.Sqrt(Math.Log(parentSimulations) / childSimulations));
             return exploitation + exploration;
         }
     }
