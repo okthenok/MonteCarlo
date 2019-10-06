@@ -32,6 +32,19 @@ namespace JPMonteCarlo
 
             for (int i = 0; i < temp.Moves.Count; i++)
             {
+                if (temp.Moves[i].IsTerminal)
+                {
+                    bestMove = i;
+                    break;
+                }
+                for (int j = 0; j < temp.Moves[i].Moves.Count; j++)
+                {
+                    if (temp.Moves[i].Moves[j].IsTerminal)
+                    {
+                        temp.Moves[i].Moves[j] //something something make it so it blocks definitely losing moves
+                    }
+                }
+
                 tempProbability = temp.Moves[i].TimesWon / temp.Moves[i].TimesSimulated;
                 if (bestProbability < tempProbability)
                 {
@@ -61,7 +74,7 @@ namespace JPMonteCarlo
                     break;
                 }
             }
-            if (allVisited)
+            if (allVisited) //fix this logic
             {
                 double bestChoice = 0;
                 foreach (IGameState node in state.Moves)
@@ -77,6 +90,11 @@ namespace JPMonteCarlo
                 if (temp.Moves.Count > 0)
                 {
                     Expansion(temp);
+                    Backpropogation(state);
+                }
+                else
+                {
+                    playthroughs++;
                     Backpropogation(state);
                 }
                 return;

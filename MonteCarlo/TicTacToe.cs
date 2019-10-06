@@ -16,7 +16,7 @@ namespace JPMonteCarlo
         {
             currToe = new Toe(board, playerStarts, playerStarts);
             monte = new MonteCarloer(currToe);
-            monte.MonteCarlo(10000);
+            monte.MonteCarlo(1000);
         }
 
         public void playerMove(int x, int y, bool playerStarts)
