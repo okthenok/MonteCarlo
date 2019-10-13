@@ -26,6 +26,8 @@ namespace JPMonteCarlo
         public IGameState Selection(IGameState state)
         {
             IGameState temp = state;
+            List<IGameState> badMoves = new List<IGameState>();
+            bool goodMove = true;
             int bestMove = 0;
             double bestProbability = 0;
             double tempProbability;
@@ -41,8 +43,14 @@ namespace JPMonteCarlo
                 {
                     if (temp.Moves[i].Moves[j].IsTerminal)
                     {
-                        temp.Moves[i].Moves[j] //something something make it so it blocks definitely losing moves
+                        goodMove = false;
+                        badMoves.Add(temp.Moves[i]);
+                        break;
                     }
+                }
+                if (goodMove)
+                {
+                    bestMove = i;
                 }
 
                 tempProbability = temp.Moves[i].TimesWon / temp.Moves[i].TimesSimulated;
@@ -51,14 +59,15 @@ namespace JPMonteCarlo
                     bestMove = i;
                     bestProbability = tempProbability;
                 }
+                goodMove = true;
             }
-            if (temp.Moves.Count > 0)
+            if (temp.Moves.Count > 0 && !badMoves.Contains(temp.Moves[bestMove]))
             {
                 return temp.Moves[bestMove];
             }
             else
             {
-                return null;
+                return temp.Moves[rand.Next(0, temp.Moves.Count)];
             }
         }
         public void Expansion(IGameState state)
@@ -79,7 +88,7 @@ namespace JPMonteCarlo
                 double bestChoice = 0;
                 foreach (IGameState node in state.Moves)
                 {
-                    double utc = UTC(node.TimesWon, node.TimesSimulated, state.TimesSimulated);
+                    double utc = UCT(node.TimesWon, node.TimesSimulated, state.TimesSimulated);
                     if (bestChoice < utc)
                     {
                         bestChoice = utc;
@@ -125,7 +134,7 @@ namespace JPMonteCarlo
                 state.TimesSimulated += move.TimesSimulated;
             }
         }
-        public double UTC(double childWins, int childSimulations, int parentSimulations, double c = 1.41)
+        public double UCT(double childWins, int childSimulations, int parentSimulations, double c = 1.41)
         {
             double exploitation = childWins / childSimulations;
             double exploration = c * (Math.Sqrt(Math.Log(parentSimulations) / childSimulations));
