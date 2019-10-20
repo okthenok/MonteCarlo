@@ -7,7 +7,7 @@ namespace JPMonteCarlo
     public class MonteCarloer2
     {
         Random rand = new Random();
-        IGameState Current { get; set; }
+        public IGameState Current { get; set; }
         public IGameState OptimalMove(bool isMax, int playouts)
         {
             if (Current.IsTerminal)
@@ -18,6 +18,18 @@ namespace JPMonteCarlo
             {
                 MonteCarlo(Current, isMax);
             }
+
+            int bestMove = 0;
+            int mostSimulations = 0;
+            for (int i = 0; i < Current.Moves.Count; i++)
+            {
+                if (Current.Moves[i].TimesSimulated > mostSimulations)
+                {
+                    mostSimulations = Current.Moves[i].TimesSimulated;
+                    bestMove = i;
+                }
+            }
+            return Current.Moves[bestMove];
         }
 
         public double MonteCarlo(IGameState curr, bool isMax)
@@ -36,14 +48,33 @@ namespace JPMonteCarlo
                     allVisited = false;
                 }
             }
-            if (allVisited)
+            if (!allVisited)
             {
                 IGameState child = Expand(curr);
 
                 double termVal = Simulate(child);
 
-                Update
+                UpdateState(child, !isMax, termVal);
+                UpdateState(curr, isMax, termVal);
+
+                return termVal;
             }
+
+            int bestMove = 0;
+            double bestUCT = 0;
+            for (int i = 0; i < curr.Moves.Count; i++)
+            {
+                double temp = UCT(curr.Moves[i].TimesWon, curr.Moves[i].TimesSimulated, curr.TimesSimulated);
+                if (temp > bestUCT)
+                {
+                    bestUCT = temp;
+                    bestMove = i;
+                }
+            }
+
+            double terminalValue = MonteCarlo(curr.Moves[bestMove], !isMax);
+            UpdateState(curr, isMax, terminalValue);
+            return terminalValue; //check the recursion here
         }
 
         public double UCT(double childWins, int childSimulations, int parentSimulations, double c = 1.41)
@@ -89,7 +120,7 @@ namespace JPMonteCarlo
 
         public void UpdateState(IGameState state, bool isMax, double terminalValue)
         {
-            if ((isMax && terminalValue == 0) || (!isMax && terminalValue == 1))
+            if ((isMax && terminalValue == 1) || (!isMax && terminalValue == 0))
             {
                 state.TimesWon++;
             }

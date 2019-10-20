@@ -10,13 +10,16 @@ namespace JPMonteCarlo
         int[,] board = new int[3, 3];
         public Toe currToe;
         Random rand = new Random();
-        MonteCarloer monte;
+        MonteCarloer2 monte;
+        bool isMax;
 
         public TicTacToe(bool playerStarts)
         {
             currToe = new Toe(board, playerStarts, playerStarts);
-            monte = new MonteCarloer(currToe);
-            monte.MonteCarlo(1000);
+            monte = new MonteCarloer2();
+            monte.Current = currToe;
+            monte.MonteCarlo(currToe, playerStarts);
+            isMax = false;
         }
 
         public void playerMove(int x, int y, bool playerStarts)
@@ -31,13 +34,16 @@ namespace JPMonteCarlo
                 {
                     board = (int[,])temp.Clone();
                     currToe = toe;
+                    monte.Current = currToe;
                     return;
                 }
             }
         }
+
         public void compMove(Toe toe)
         {
-            currToe = (Toe)monte.Selection(toe);
+            currToe = (Toe)monte.OptimalMove(isMax, 10000);
+            monte.Current = currToe;
             board = (int[,])currToe.Board.Clone();
         }
     }
