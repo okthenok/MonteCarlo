@@ -1,19 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace JPMonteCarlo
 {
     public class ConnectFour
     {
-        public ConnectFour()
-        {
+        int[,] board = new int[7, 6];
+        public Fou currFou;
+        Random rand = new Random();
+        MonteCarloer2 monte;
+        bool isMax;
 
+        public ConnectFour(bool playerStarts)
+        {
+            currFou = new Fou(board, playerStarts, playerStarts);
+            monte = new MonteCarloer2();
+            monte.Current = currFou;
+            monte.MonteCarlo(currFou, playerStarts);
+            isMax = false;
         }
 
-        public void PlayerMove()
+        public void PlayerMove(int column)
         {
+            var temp = (int[,])board.Clone();
+            for (int y = 0; y < board.GetLength(1); y++)
+            {
+                if (board[column, y] == 0)
+                {
+                    board[column, y] = 1;
+                }
+            }
+            foreach (Fou fou in currFou.Moves)
+            {
+                if (temp.Rank == fou.Board.Rank &&
+                        Enumerable.Range(0, temp.Rank).All(dimension => temp.GetLength(dimension) == fou.Board.GetLength(dimension) &&
+                        temp.Cast<int>().SequenceEqual(fou.Board.Cast<int>())))
+                {
 
+                }
+            }
         }
 
         public void CompMove()
