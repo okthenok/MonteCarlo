@@ -7,7 +7,8 @@ namespace JPMonteCarlo
     {
         static void Main(string[] args)
         {
-            TicTacToe game;
+            debug();
+            ConnectFour game;
             bool playerStarts;
 
             Console.WriteLine("Do you want to play first? Y/N");
@@ -19,7 +20,50 @@ namespace JPMonteCarlo
             {
                 playerStarts = false;
             }
-            game = new TicTacToe(playerStarts);
+
+            game = new ConnectFour(playerStarts);
+            StringBuilder sb = new StringBuilder();
+            int location = 0;
+            if (playerStarts)
+            {
+                for (int j = 0; j < game.currFou.Board.GetLength(1); j++) //shows the board
+                {
+                    sb.Remove(0, sb.Length);
+                    for (int i = 0; i < game.currFou.Board.GetLength(0); i++)
+                    {
+                        sb.Append(game.currFou.Board[i, j] + " ");
+                    }
+                    Console.WriteLine(sb.ToString());
+                }
+
+                Console.WriteLine("Which column do you want to place a chip in?"); //player move
+                location = Convert.ToInt32(Console.ReadLine());
+                game.PlayerMove(location);
+            }
+            while (!game.currFou.IsTerminal)
+            {
+                if (!game.currFou.IsTerminal) //computer move
+                {
+                    game.CompMove();
+                }
+
+                for (int j = 0; j < game.currFou.Board.GetLength(1); j++) //shows the board
+                {
+                    sb.Remove(0, sb.Length);
+                    for (int i = 0; i < game.currFou.Board.GetLength(0); i++)
+                    {
+                        sb.Append(game.currFou.Board[i, j] + " ");
+                    }
+                    Console.WriteLine(sb.ToString());
+                }
+
+                Console.WriteLine("Which column do you want to place a chip in?"); //player move
+                location = Convert.ToInt32(Console.ReadLine());
+                game.PlayerMove(location);
+            }
+
+            #region tictactoe
+            /*game = new TicTacToe(playerStarts);
 
             StringBuilder sb = new StringBuilder();
             int[] location = new int[2];
@@ -53,6 +97,7 @@ namespace JPMonteCarlo
                         }
                         Console.WriteLine(sb.ToString());
                     }
+
                     Console.WriteLine("Which block would you like to select? (x, y)");
                     location = Array.ConvertAll(Console.ReadLine().Split(", "), int.Parse);
                     game.playerMove(location[1] - 1, location[0] - 1, playerStarts);
@@ -87,7 +132,24 @@ namespace JPMonteCarlo
             Console.WriteLine("Which block would you like to select? (x, y)");
             location = Array.ConvertAll(Console.ReadLine().Split(", "), int.Parse);
             game.playerMove(location[1] - 1, location[0] - 1, playerStarts);
+        }*/
+            #endregion
         }
-        
+
+        static void debug()
+        {
+            int[,] board = new int[7, 6];
+            board[0, 0] = 1;
+            board[1, 1] = 1;
+            board[2, 2] = 1;
+            board[3, 3] = 1;
+            board[5, 0] = 1;
+
+            Fou fou = new Fou(board, true, true);
+            if (fou.CheckGameOver() == true)
+            {
+                return;
+            }
+        }
     }
 }

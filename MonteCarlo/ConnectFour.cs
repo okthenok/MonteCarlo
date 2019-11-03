@@ -27,9 +27,9 @@ namespace JPMonteCarlo
             var temp = (int[,])board.Clone();
             for (int y = 0; y < board.GetLength(1); y++)
             {
-                if (board[column, y] == 0)
+                if (temp[column, y] == 0)
                 {
-                    board[column, y] = 1;
+                    temp[column, y] = 1;
                 }
             }
             foreach (Fou fou in currFou.Moves)
@@ -38,14 +38,19 @@ namespace JPMonteCarlo
                         Enumerable.Range(0, temp.Rank).All(dimension => temp.GetLength(dimension) == fou.Board.GetLength(dimension) &&
                         temp.Cast<int>().SequenceEqual(fou.Board.Cast<int>())))
                 {
-
+                    board = (int[,])fou.Board.Clone();
+                    currFou = fou;
+                    monte.Current = currFou;
+                    return;
                 }
             }
         }
 
         public void CompMove()
         {
-
+            currFou = (Fou)monte.OptimalMove(isMax, 1000);
+            monte.Current = currFou;
+            board = (int[,])currFou.Board.Clone();
         }
     }
 }

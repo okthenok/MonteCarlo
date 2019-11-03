@@ -10,13 +10,15 @@ namespace JPMonteCarlo
         public int[,] Board = new int[7, 6];
         public bool playerTurn;
         public bool playerStarted;
+        public override List<IGameState> Moves => moves ?? (moves = findMoves());
         public Fou(int[,] board, bool playerstarted, bool playerturn)
         {
             playerTurn = playerturn;
             Board = board;
             playerStarted = playerstarted;
+            CheckGameOver();
         }
-        public List<IGameState> findMoves(Fou state)
+        public List<IGameState> findMoves()
         {
             if (IsTerminal)
             {
@@ -24,15 +26,15 @@ namespace JPMonteCarlo
             }
 
             List<IGameState> possibleMoves = new List<IGameState>();
-            for (int i = 0; i < state.Board.GetLength(0); i++)
+            for (int i = 0; i < Board.GetLength(0); i++)
             {
-                for (int j = 0; j < state.Board.GetLength(1); j++)
+                for (int j = 0; j < Board.GetLength(1); j++)
                 {
-                    if (state.Board[i, j] == 0)
+                    if (Board[i, j] == 0)
                     {
                         var temp = (int[,])Board.Clone();
                         temp[i, j] = playerTurn ? 1 : -1;
-                        possibleMoves.Add(new Fou(state.Board, playerStarted, !playerTurn));
+                        possibleMoves.Add(new Fou(temp, playerStarted, !playerTurn));
                         break;
                     }
                 }
@@ -40,7 +42,7 @@ namespace JPMonteCarlo
             return possibleMoves;
         }
 
-        public void CheckGameOver()
+        public bool CheckGameOver()
         {
             int count = 0;
             for (int y = 0; y < Board.GetLength(1); y++) //checking horizantal 4
@@ -55,9 +57,10 @@ namespace JPMonteCarlo
                     {
                         count += Board[x, y];
                     }
-                    if (count >= 4) { this.Value = 1; this.IsTerminal = true; return; }
-                    else if (count <= -4) { this.Value = 0; this.IsTerminal = true; return; }
-                    count = 0;
+                    if (count >= 4) 
+                    { this.Value = 1; this.IsTerminal = true; count = 0; return this.IsTerminal; }
+                    else if (count <= -4) 
+                    { this.Value = 0; this.IsTerminal = true; count = 0; return this.IsTerminal; }
                 }
             }
 
@@ -73,9 +76,10 @@ namespace JPMonteCarlo
                     {
                         count += Board[x, y];
                     }
-                    if (count >= 4) { this.Value = 1; this.IsTerminal = true; return; }
-                    else if (count <= -4) { this.Value = 0; this.IsTerminal = true; return; }
-                    count = 0;
+                    if (count >= 4) 
+                    { this.Value = 1; this.IsTerminal = true; count = 0; return this.IsTerminal; }
+                    else if (count <= -4) 
+                    { this.Value = 0; this.IsTerminal = true; count = 0; return this.IsTerminal; }
                 }
             }
 
@@ -87,42 +91,50 @@ namespace JPMonteCarlo
                 {
                     count += Board[row, col];
                 }
-                if (count >= 4) { this.Value = 1; this.IsTerminal = true; return; }
-                else if (count <= 4) { this.Value = 0; this.IsTerminal = true; return; }
+                if (count >= 4) 
+                { this.Value = 1; this.IsTerminal = true; return this.IsTerminal; }
+                else if (count <= -4) 
+                { this.Value = 0; this.IsTerminal = true; return this.IsTerminal; }
             }
             for (int y = 1; y < Board.GetLength(0) - 2; y++)
             {
                 count = 0;
                 int row, col;
-                for (row = 0, col = y; row < Board.GetLength(1) && col < Board.GetLength(0); row++, col++)
+                for (row = 0, col = y; row < Board.GetLength(0) && col < Board.GetLength(1); row++, col++)
                 {
                     count += Board[row, col];
                 }
-                if (count >= 4) { this.Value = 1; this.IsTerminal = true; return; }
-                else if (count <= 4) { this.Value = 0; this.IsTerminal = true; return; }
+                if (count >= 4) 
+                { this.Value = 1; this.IsTerminal = true; return this.IsTerminal; }
+                else if (count <= -4) 
+                { this.Value = 0; this.IsTerminal = true; return this.IsTerminal; }
             }
 
             for (int y = Board.GetLength(0) - 1; y > 2; y--) //right to left diagonal
             {
                 count = 0;
                 int row, col;
-                for (row = Board.GetLength(1) - 1, col = y; row >= 0 && col >= 0; row--, col--)
+                for (row = Board.GetLength(1) - 1, col = y - 1; row >= 0 && col >= 0; row--, col--)
                 {
                     count += Board[row, col];
                 }
-                if (count >= 4) { this.Value = 1; this.IsTerminal = true; return; }
-                else if (count <= 4) { this.Value = 0; this.IsTerminal = true; return; }
+                if (count >= 4) 
+                { this.Value = 1; this.IsTerminal = true; return this.IsTerminal; }
+                else if (count <= -4) 
+                { this.Value = 0; this.IsTerminal = true; return this.IsTerminal; }
             }
             for (int x = Board.GetLength(1) - 1; x > 2; x--) 
             {
                 count = 0;
                 int row, col;
-                for (row = x, col = Board.GetLength(0) - 1; row >= 0 && col >= 0; row--, col--)
+                for (row = x, col = Board.GetLength(1) - 1; row >= 0 && col >= 0; row--, col--)
                 {
                     count += Board[row, col];
                 }
-                if (count >= 4) { this.Value = 1; this.IsTerminal = true; return; }
-                else if (count <= 4) { this.Value = 0; this.IsTerminal = true; return; }
+                if (count >= 4) 
+                { this.Value = 1; this.IsTerminal = true; return this.IsTerminal; }
+                else if (count <= -4) 
+                { this.Value = 0; this.IsTerminal = true; return this.IsTerminal; }
             }
 
             bool isFull = true;
@@ -140,8 +152,9 @@ namespace JPMonteCarlo
             {
                 this.IsTerminal = true;
                 this.Value = 0.5;
-                return;
+                return this.IsTerminal;
             }
+            return this.IsTerminal;
         }
     }
 }

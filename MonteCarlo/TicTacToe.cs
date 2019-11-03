@@ -40,7 +40,7 @@ namespace JPMonteCarlo
             }
         }
 
-        public void compMove(Toe toe)
+        public void compMove()
         {
             currToe = (Toe)monte.OptimalMove(isMax, 10000);
             monte.Current = currToe;
