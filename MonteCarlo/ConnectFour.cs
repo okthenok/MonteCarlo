@@ -25,11 +25,12 @@ namespace JPMonteCarlo
         public void PlayerMove(int column)
         {
             var temp = (int[,])board.Clone();
-            for (int y = 0; y < board.GetLength(1); y++)
+            for (int y = board.GetLength(1) - 1; y >= 0; y--)
             {
                 if (temp[column, y] == 0)
                 {
                     temp[column, y] = 1;
+                    break;
                 }
             }
             foreach (Fou fou in currFou.Moves)

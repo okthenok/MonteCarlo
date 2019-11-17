@@ -77,14 +77,14 @@ namespace JPMonteCarlo
             return terminalValue; //check the recursion here
         }
 
-        public double UCT(double childWins, int childSimulations, int parentSimulations, double c = 1.41)
+        public double UCT(double childWins, int childSimulations, int parentSimulations, double c = 1.41) //returns the UCT Value
         {
             double exploitation = childWins / childSimulations;
             double exploration = c * (Math.Sqrt(Math.Log(parentSimulations) / childSimulations));
             return exploitation + exploration;
         }
 
-        public IGameState Expand(IGameState state)
+        public IGameState Expand(IGameState state) //returns a random unvisited child node
         {
             List<IGameState> unvisitedNodes = new List<IGameState>();
             for (int i = 0; i < state.Moves.Count; i++)
@@ -98,7 +98,7 @@ namespace JPMonteCarlo
             return unvisitedNodes[rand.Next(unvisitedNodes.Count)];
         }
 
-        public double Simulate(IGameState startState)
+        public double Simulate(IGameState startState) //sets the node to visited, returns the value of a random leaf node
         {
             startState.Visited = true;
 
