@@ -75,16 +75,17 @@ namespace JPMonteCarlo
             }
             if (game.currFou.Value == 1)
             {
-                Console.WriteLine("Player Wins");
+                Console.WriteLine("Computer Wins");
             }
             else if (game.currFou.Value == 0)
             {
-                Console.WriteLine("Computer Wins");
+                Console.WriteLine("Player Wins");
             }
             else
             {
                 Console.WriteLine("Tie");
             }
+            Console.WriteLine(CheckGameOver(game.currFou));
 
             #region tictactoe
             /*game = new TicTacToe(playerStarts);
@@ -158,6 +159,136 @@ namespace JPMonteCarlo
             game.playerMove(location[1] - 1, location[0] - 1, playerStarts);
         }*/
             #endregion
+        }
+
+        static int CheckGameOver(Fou fou)
+        {
+            int count = 0;
+            int chainvalue = 1;
+            for (int y = 0; y < fou.Board.GetLength(1); y++) //checking horizantal 4
+            {
+                for (int x = 0; x < fou.Board.GetLength(0); x++)
+                {
+                    if (fou.Board[x, y] != chainvalue)
+                    {
+                        count = 0;
+                    }
+                    count += fou.Board[x, y];
+                    chainvalue = fou.Board[x, y];
+
+                    if (count >= 4) { return 0; }
+                    else if (count <= -4) { return 1; }
+                }
+                count = 0;
+            }
+
+            for (int x = 0; x < fou.Board.GetLength(0); x++) //checking vertical 4
+            {
+                for (int y = 0; y < fou.Board.GetLength(1); y++)
+                {
+                    if (fou.Board[x, y] != chainvalue)
+                    {
+                        count = 0;
+                    }
+                    count += fou.Board[x, y];
+                    chainvalue = fou.Board[x, y];
+
+                    if (count >= 4) { return 2; }
+                    else if (count <= -4) { return 3; }
+                }
+                count = 0;
+            }
+
+            for (int x = 1; x < fou.Board.GetLength(0) - 2; x++) //left to right diagonal
+            {
+                count = 0;
+                int row, col;
+                for (col = x, row = 0; row < fou.Board.GetLength(1) && col < fou.Board.GetLength(0); row++, col++)
+                {
+                    if (fou.Board[col, row] != chainvalue)
+                    {
+                        count = 0;
+                    }
+                    count += fou.Board[col, row];
+                    chainvalue = fou.Board[col, row];
+                    if (count >= 4) { return 4; }
+                    else if (count <= -4) { return 5; }
+                }
+                count = 0;
+            }
+            for (int y = 0; y < fou.Board.GetLength(1) - 2; y++)
+            {
+                count = 0;
+                int row, col;
+                for (row = y, col = 0; row < fou.Board.GetLength(1) && col < fou.Board.GetLength(0); row++, col++)
+                {
+                    if (fou.Board[col, row] != chainvalue)
+                    {
+                        count = 0;
+                    }
+                    count += fou.Board[col, row];
+                    chainvalue = fou.Board[col, row];
+                    if (count >= 4) { return 6; }
+                    else if (count <= -4) { return 7; }
+                }
+                count = 0;
+            }
+
+            for (int y = 0; y < fou.Board.GetLength(1) - 2; y++) //right to left diagonal
+            {
+                count = 0;
+                int row, col;
+                for (row = y, col = fou.Board.GetLength(0) - 1; row < fou.Board.GetLength(1) && col >= 0; row++, col--)
+                {
+                    if (fou.Board[col, row] != chainvalue)
+                    {
+                        count = 0;
+                    }
+                    count += fou.Board[col, row];
+                    chainvalue = fou.Board[col, row];
+                    if (count >= 4) { return 8; }
+                    else if (count <= -4) { return 9; }
+                }
+                count = 0;
+            }
+            for (int x = fou.Board.GetLength(1) - 2; x > 2; x--)
+            {
+                count = 0;
+                int row, col;
+                for (row = 0, col = x; row < fou.Board.GetLength(1) && col >= 0; row++, col--)
+                {
+                    if (fou.Board[col, row] == 0)
+                    {
+                        count = 0;
+                    }
+                    else
+                    {
+                        count += fou.Board[col, row];
+                    }
+                    if (count >= 4) { return 10; }
+                    else if (count <= -4) { return 11; }
+                }
+                count = 0;
+            }
+
+            bool isFull = true;
+            for (int x = 0; x < fou.Board.GetLength(0); x++)
+            {
+                for (int y = 0; y < fou.Board.GetLength(1); y++)
+                {
+                    if (fou.Board[x, y] == 0)
+                    {
+                        isFull = false;
+                    }
+                }
+            }
+            if (isFull)
+            {
+                fou.IsTerminal = true;
+                fou.Value = 0.5;
+                return 12;
+            }
+            return 13;
         }
     }
 }
